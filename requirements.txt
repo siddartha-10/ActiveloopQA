@@ -1,0 +1,5 @@
+langchain 
+deeplake 
+pypdf 
+openai 
+tiktoken
