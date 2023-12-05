@@ -3,3 +3,4 @@ deeplake
 pypdf 
 openai 
 tiktoken
+lama_index
