@@ -58,11 +58,10 @@ def generate_answer():
 
         # Extract the answer from the LangChain output
         answer = result
-        print(answer)
         return jsonify({"answer": answer})
 
     except Exception as e:
         return jsonify({"error": str(e)})
 
 if __name__ == '__main__':
-    app.run(port=3001)
+    app.run(port=3002)
