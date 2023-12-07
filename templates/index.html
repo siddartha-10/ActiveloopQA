@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -83,4 +83,205 @@
         }
     </script>
 </body>
-</html>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>/</title>
+    <style>
+      body {
+        background-color: black;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #heading {
+        color: white;
+        padding-top: 50px;
+      }
+      #chat-container {
+        width: 80%;
+        max-width: 800px;
+        margin: 20px auto 0;
+        padding: 20px;
+        border: 1px solid black;
+        border-radius: 10px;
+        height: 60vh;
+        overflow-y: auto;
+        box-shadow: 0px 0px 5px 5px;
+      }
+      #chat-container::-webkit-scrollbar {
+        width: 8px;
+      }
+      #chat-container::-webkit-scrollbar-track {
+        background: none; /* Hide the background */
+      }
+      #chat-container::-webkit-scrollbar-thumb {
+        background-color: #ccc; /* Color of the scrollbar */
+        border-radius: 4px;
+      }
+      #chat-messages {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      .message {
+        margin-bottom: 10px;
+      }
+      .user-message {
+        text-align: right;
+        margin-left: auto;
+        background-color: #f0f0f0;
+        border-radius: 15px 15px 0 15px;
+        padding: 10px;
+      }
+      #bot-message1 {
+        text-align: left;
+        background-color: #d4edda;
+        border-radius: 15px 15px 15px 0;
+        padding-bottom: 10px;
+        padding-top: 10px;
+        padding-left: 5px;
+        margin-bottom: 10px;
+      }
+      .bot-message {
+        text-align: left;
+        background-color: #d4edda;
+        border-radius: 15px 15px 15px 0;
+        padding: 10px;
+      }
+      #input-container {
+        width: 60%;
+        display: flex;
+        align-items: center;
+      }
+      #user-input {
+        width: 900px;
+        padding: 13px;
+        border-radius: 5px 0 0 5px;
+        border: 1px solid #ccc;
+        margin-top: 20px;
+      }
+      #button-container {
+        width: 80%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; /* Align button to the right */
+        margin-top: 10px;
+        position: relative;
+      }
+      #ask-btn {
+        width: 50px;
+        padding: 3px;
+        border: none;
+        border-radius: 5px;
+        background-color: #ffc107;
+        color: black;
+        font-size: larger;
+        cursor: pointer;
+        position: relative;
+        right: 150px;
+        bottom: 45px;
+      }
+      .loader {
+        border: 3px solid #f3f3f3;
+        border-top: 2px solid #3498db;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        animation: spin 1s linear infinite;
+        display: none;
+        position: absolute;
+        right: 100px; /* Positioned relative to the button container */
+        bottom: 45px;
+        transform: translateY(-50%);
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="heading">Hello! How can I help you today?</h1>
+    <div id="chat-container">
+      <ul id="chat-messages">
+        <li id="bot-message1">Curious? Ask me about the CSI Manufacturing Unit Test Bed!</li>
+      </ul>
+    </div>
+    <div id="input-container">
+      <input
+        type="text"
+        id="user-input"
+        placeholder="Type your message..."
+        onkeydown="handleKeyPress(event)"
+      />
+    </div>
+    <div id="button-container">
+      <button id="ask-btn" onclick="sendMessage()">></button>
+      <div id="loader" class="loader" style="display: none"></div>
+    </div>
+    <script>
+        function appendMessage(message, isUser) {
+            const chatMessages = document.getElementById("chat-messages");
+            const li = document.createElement("li");
+            li.className = isUser ? "user-message" : "bot-message";
+            li.textContent = message;
+            chatMessages.appendChild(li);
+        }
+    
+        function sendMessage() {
+            const userInput = document.getElementById("user-input");
+            const userMessage = userInput.value.trim();
+    
+            if (userMessage !== "") {
+                // Display user message in the chat
+                appendMessage(userMessage, true);
+    
+                // Make an API call to your Flask backend to get the bot's response
+                // Make an API call to your Flask backend to get the bot's response
+                fetch('http://127.0.0.1:5002/generate_answer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: userMessage,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Display bot's response in the chat
+                    const botMessage = data.answer;
+                    appendMessage(botMessage, false);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+
+                // Clear the user input field
+                userInput.value = "";
+
+            }
+        }
+    
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                // Prevent the default form submission behavior
+                event.preventDefault();
+    
+                // Trigger the sendMessage function on "Enter" key press
+                sendMessage();
+            }
+        }
+    </script>
+</body>    
