@@ -536,94 +536,103 @@
     </footer>
 
 
-
-</body>
-
-<script>
-    const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
-    const container = document.querySelector('.container');
-    if (localStorage.getItem('darkMode') === 'enabled') {
-        document.body.classList.add('dark-mode');
-        darkModeCheckbox.checked = true;
-    }
-
-    darkModeCheckbox.addEventListener('change', () => {
-        document.body.classList.toggle('dark-mode');
-        let darkMode = 'enabled';
-        if (!darkModeCheckbox.checked) {
-            darkMode = null;
+    <script>
+        const darkModeCheckbox = document.getElementById('dark-mode-checkbox');
+        const container = document.querySelector('.container');
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            darkModeCheckbox.checked = true;
         }
-        localStorage.setItem('darkMode', darkMode);
-    });
 
-    function sendData() {
-        var message = document.getElementsByClassName("chat-input")[0].value;
-        var newMessage = document.createElement("div");
-        newMessage.className = "message sender-message";
-        newMessage.innerHTML = message;
-        container.appendChild(newMessage);
-        document.getElementsByClassName("chat-input")[0].value = "";
+        darkModeCheckbox.addEventListener('change', () => {
+            document.body.classList.toggle('dark-mode');
+            let darkMode = 'enabled';
+            if (!darkModeCheckbox.checked) {
+                darkMode = null;
+            }
+            localStorage.setItem('darkMode', darkMode);
+        });
 
-        // now we have to create a div for the response with typing gif until we get the response from the server
-        var typingGif = document.createElement("img");
-        typingGif.src =
-            "https://retail.curator.interworks.com/plugins/interworks/content/assets/images/dots-loading-animation.gif";
-        typingGif.className = "message recipient-message";
-        // set the height and width of the gif
-        typingGif.style.width = "80px";
-        container.appendChild(typingGif);
+        function sendData() {
+            var message = document.getElementsByClassName("chat-input")[0].value;
+            var newMessage = document.createElement("div");
+            newMessage.className = "message sender-message";
+            newMessage.innerHTML = message;
+            container.appendChild(newMessage);
+            document.getElementsByClassName("chat-input")[0].value = "";
 
-        //  send the message to the server using fetch to the url /conversation with post method and send the message as json
-        //  when the server responds, replace the loading gif with the response message
-        //  if the server responds with an error, replace the loading gif with an error message
+            // now we have to create a div for the response with typing gif until we get the response from the server
+            var typingGif = document.createElement("img");
+            typingGif.src =
+                "https://retail.curator.interworks.com/plugins/interworks/content/assets/images/dots-loading-animation.gif";
+            typingGif.className = "message recipient-message";
+            // set the height and width of the gif
+            typingGif.style.width = "80px";
+            container.appendChild(typingGif);
 
-        fetch('/generate_answer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    prompt: message
+            //  send the message to the server using fetch to the url /conversation with post method and send the message as json
+            //  when the server responds, replace the loading gif with the response message
+            //  if the server responds with an error, replace the loading gif with an error message
+
+            fetch('/generate_answer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: message
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // replace the loading gif with the response message
-                typingGif.remove();
-                var newMessage = document.createElement("div");
-                newMessage.className = "message recipient-message";
-                newMessage.innerHTML = data.message;
-                container.appendChild(newMessage);
-            })
-            .catch(error => {
-                // replace the loading gif with an error message
-                typingGif.remove();
-                var newMessage = document.createElement("div");
-                newMessage.className = "message recipient-message";
-                newMessage.innerHTML = "Error";
-                container.appendChild(newMessage);
-            });
-        // scroll to the bottom of the container
-        container.scrollTop = container.scrollHeight;
+                .then(response => response.json())
+                .then(data => {
+                    // replace the loading gif with the response message
+                    typingGif.remove();
+                    var newMessage = document.createElement("div");
+                    newMessage.className = "message recipient-message";
+                    newMessage.innerHTML = data.message;
+                    container.appendChild(newMessage);
+                })
+                .catch(error => {
+                    // replace the loading gif with an error message
+                    typingGif.remove();
+                    var newMessage = document.createElement("div");
+                    newMessage.className = "message recipient-message";
+                    newMessage.innerHTML = "Error";
+                    container.appendChild(newMessage);
+                });
+            // scroll to the bottom of the container
+            container.scrollTop = container.scrollHeight;
 
+        }
+
+        function logout() {
+            window.location.href = "/logout";
+        }
+        document.getElementById('delete-button').addEventListener('click', function() {
+        // Clear all messages in the container
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+
+        // Append the new message
+        var welcomeMessage = document.createElement("div");
+        welcomeMessage.className = "message recipient-message";
+        welcomeMessage.innerHTML = "Hi there! I'm your Bot. I will be answering questions related to CSI Testbed.";
+        container.appendChild(welcomeMessage);
+    });
+    function handleKeyPress(event) {
+        if (event.key === "Enter") {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+
+            // Trigger the sendData function on "Enter" key press
+            sendData();
+        }
     }
 
-    function logout() {
-        window.location.href = "/logout";
-    }
-    document.getElementById('delete-button').addEventListener('click', function() {
-    // Clear all messages in the container
-    while (container.firstChild) {
-        container.removeChild(container.firstChild);
-    }
-
-    // Append the new message
-    var welcomeMessage = document.createElement("div");
-    welcomeMessage.className = "message recipient-message";
-    welcomeMessage.innerHTML = "Hi there! I'm your Bot. I will be answering questions related to CSI Testbed.";
-    container.appendChild(welcomeMessage);
-});
-
-</script>
+    // Add an event listener to the textarea to call handleKeyPress function
+    document.querySelector('.chat-input').addEventListener('keydown', handleKeyPress);
+    </script>
+    </body>
 
 </html>
