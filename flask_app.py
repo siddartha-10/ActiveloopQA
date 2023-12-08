@@ -113,12 +113,13 @@ retriever.search_kwargs["deep_memory"] = True
 retriever.search_kwargs["k"] = 10
 
 llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=0)
-memory = ConversationSummaryMemory(llm=llm, memory_key='chat_history', return_messages=True, max_token_length=500)
+memory = ConversationSummaryMemory(llm=llm, memory_key='chat_history', return_messages=True, output_key='answer')
 
 conversation_chain = ConversationalRetrievalChain.from_llm(
     llm=llm,
     retriever=retriever,
-    memory=memory
+    memory=memory,
+    get_chat_history=lambda h : h
 )
 
 @app.route('/')
@@ -132,14 +133,7 @@ def generate_answer():
         prompt = data['prompt']
         print(prompt)
         
-        # Get the conversation history from memory
-        prompt1 = memory.load_memory_variables({})['chat_history'][0].content
-        
-        # Run the conversation chain
-        result = conversation_chain.run(prompt + "\n" + prompt1)
-        
-        # Extract the answer from the LangChain output
-        answer = result
+        answer = conversation_chain({"question": prompt})["answer"]
         
 
         return app.response_class(
