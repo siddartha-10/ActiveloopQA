@@ -135,9 +135,8 @@ def generate_answer():
         
         answer = conversation_chain({"question": prompt})["answer"]
         
-
         return app.response_class(
-            response=json.dumps({"message": answer, "status": "success"}),
+            response=json.dumps({"message": answer , "status": "success"}),
             status=200,
             mimetype='application/json'
         )
